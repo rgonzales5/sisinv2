@@ -1,0 +1,132 @@
+create table tid_tablas
+( 
+  idtabla int not null,
+  nombre char(20) not null,
+  codigoactual bigint not null,
+  primary key(idtabla)
+)engine=innodb;
+
+
+create table ttipo_usuario
+(
+  codigo int auto_increment not null,
+  descripcion char(25),
+  estado varchar(1) not null,
+  primary key (codigo)
+)engine=innodb;
+
+insert into ttipo_usuario values(1,'ADMINISTRADOR','A');
+
+create table tpersona
+(
+  codigo int not null,
+  nombres varchar(25) not null,
+  apellidop varchar(20) not null,
+  apellidom varchar(20) not null,
+  ci        varchar(20) not null,
+  telefono  varchar(15) not null,
+  estado varchar(1) not null,
+  email varchar(50),
+  primary key(codigo)
+)engine=innodb;
+
+insert into tpersona values (1,'ADMINISTRADOR','ADMIN','ADMIN','0','67704231','A',null);
+
+
+create table tusuario
+( codigo int not null,
+  nombre_usuario varchar(10) not null UNIQUE  ,
+  password varchar(120) not null,
+  tipo_usr int not null,
+  estado char(1) not null,
+  primary key(codigo),
+  foreign key(codigo) references tpersona(codigo),
+  foreign key(tipo_usr) references ttipo_usuario(codigo)
+)engine=innodb;
+
+insert into tusuario values(1,'ADMINISTRA',MD5('admsistema'),1,'A');
+
+create table tusuario_vigencia
+(
+   codigo bigint not null auto_increment,
+   cod_usuario int not null,
+   fechai datetime not null,
+   fechaf datetime,
+   primary key(codigo),
+   foreign key(cod_usuario) references tusuario(codigo)
+)engine=innodb;
+
+create table tturno
+( codigo int not null,
+  horai time not null,
+  horaf time not null,
+  fechai datetime not null,
+  fechaf datetime,
+  estado char(1) not null,
+  primary key(codigo)
+)engine=innodb;
+
+insert into tturno values(1,'07:00','15:00',now(),null,'A');
+insert into tturno values(2,'15:00','23:00',now(),null,'A');
+insert into tturno values(3,'23:00','07:00',now(),null,'A');
+
+create table tpantalla
+(
+   codigo int not null,
+   nombre char(50) not null unique,
+   primary key(codigo)
+)engine=innodb;
+
+create table ttipo_opcion
+(
+  codigo int auto_increment not null,
+  descripcion char(50) not null,
+  primary key(codigo)
+)engine=innodb;
+
+create table topcion_pantalla
+( 
+   cod_pantalla int not null,
+   cod_tipo_opcion int not null,
+   estado char(1) not null, 
+   primary key(cod_pantalla,cod_tipo_opcion),
+   foreign key(cod_pantalla) references tpantalla(codigo),
+   foreign key(cod_tipo_opcion) references ttipo_opcion(codigo)
+   
+)engine=innodb;
+
+create table tpermiso_pantalla_usr
+(
+   codigo int not null,
+   cod_pantalla int not null,
+   cod_tipo_opcion int not null,   
+   cod_usuario int not null,
+   fechai datetime not null,
+   fechaf datetime,
+   estado char(1) not null,
+   cod_usuarioa int not null,
+   cod_usuariob int,
+   primary key(codigo),
+   foreign key(cod_pantalla,cod_tipo_opcion) references topcion_pantalla(cod_pantalla,cod_tipo_opcion),
+   foreign key(cod_usuario) references tusuario(codigo),
+   foreign key(cod_usuarioa) references tusuario(codigo) 
+)engine=innodb;
+
+create table ttrabaja_turno
+(
+  cod_usuario int not null,
+  cod_turno int not null,
+  fecha_turno date not null,
+  estado char(1) not null,
+  fecha_horai datetime not null,
+  fecha_horaf datetime,
+  primary key(cod_usuario,cod_turno,fecha_turno),
+  foreign key(cod_usuario) references tusuario(codigo),
+  foreign key(cod_turno) references tturno(codigo)
+)engine=innodb;
+
+
+create user 'usrinventario'@'%' IDENTIFIED BY 'pusrinventario';
+
+GRANT SELECT,INSERT,UPDATE,DELETE,execute, lock tables, grant option 
+    ON dbinventario.* TO 'usrinventario'@'%' with grant option;

@@ -1,0 +1,413 @@
+create table id_tablas
+( 
+tpersona int not null,
+tusuario int not null,
+tturno int not null,
+tpermiso_pantalla_usr  int not null,
+tmateria_prima  int not null,
+tformulacion  int not null,
+tlectura_peso  int not null
+)engine=innodb;
+
+create table taplicacion_formulacion
+( 
+  codigo int auto_increment not null,
+  descripcion char(30) not null,
+  primary key (codigo)
+)engine=innodb;
+
+insert into taplicacion_formulacion values(0,'FORMULACION UNICA');
+insert into taplicacion_formulacion values(0,'FORMULACION X PRODUCTO');
+
+create table tparametros_generales
+( 
+  codigo_af int not null,
+  fechai datetime not null,
+  fechaf datetime ,
+  primary key(codigo_af,fechai),
+  foreign key(codigo_af) references taplicacion_formulacion(codigo)
+)engine=innodb;
+
+insert into tparametros_generales values(1,now(),null);
+
+insert into id_tablas values(1,1,3,46,0,0,0)
+
+;
+create table ttipo_persona
+(
+  codigo int auto_increment not null,
+  descripcion char(25),
+  estado varchar(1) not null,
+  primary key (codigo)
+)engine=innodb;
+
+insert into ttipo_persona values(1,'EMPLEADO','A');
+
+
+
+create table ttipo_usuario
+(
+  codigo int auto_increment not null,
+  descripcion char(25),
+  estado varchar(1) not null,
+  primary key (codigo)
+)engine=innodb;
+
+insert into ttipo_usuario values(1,'ADMINISTRADOR','A');
+
+
+create table tpersona
+(
+  codigo int not null,
+  nombres varchar(25) not null,
+  apellidop varchar(20) not null,
+  apellidom varchar(20) not null,
+  ci        varchar(20) not null,
+  telefono  varchar(15) not null,
+  tipo_per int not null,
+  estado varchar(1) not null,
+  primary key(codigo),
+  foreign key (tipo_per) references ttipo_persona(codigo)
+)engine=innodb;
+
+insert into tpersona values (1,'ADMINISTRADOR','SISTEMA','PESAJE','000000','67704231',1,'A');
+
+
+create table tusuario
+( codigo int not null,
+  nombre_usuario varchar(10) not null UNIQUE  ,
+  password varchar(35) not null,
+  tipo_usr int not null,
+  estado char(1) not null,
+  primary key(codigo),
+  foreign key(codigo) references tpersona(codigo),
+  foreign key(tipo_usr) references ttipo_usuario(codigo)
+)engine=innodb;
+
+insert into tusuario values(1,'ADMINISTRA',MD5('admsistema'),1,'A');
+
+
+
+create table tturno
+( codigo int not null,
+  horai time not null,
+  horaf time not null,
+  fechai datetime not null,
+  fechaf datetime ,
+  estado varchar(1) not null,
+  primary key(codigo)
+)engine=innodb;
+
+insert into tturno values(1,'07:00','15:00',now(),null,'A');
+insert into tturno values(2,'15:00','23:00',now(),null,'A');
+insert into tturno values(3,'23:00','07:00',now(),null,'A');
+
+
+
+
+
+create table tpantalla
+(
+   codigo int auto_increment not null,
+   nombre char(50) not null,
+   primary key(codigo)
+)engine=innodb;
+
+create table ttipo_opcion
+(
+  codigo int auto_increment not null,
+  descripcion char(50) not null,
+  primary key(codigo)
+)engine=innodb
+;
+create table topcion_pantalla
+( 
+   codigo int auto_increment not null,
+   cod_pantalla int not null,
+   cod_tipo_opcion int not null,
+   estado char(1) not null,
+   constraint unique idxuni_opc_pant (cod_pantalla,cod_tipo_opcion),
+   primary key(codigo),
+   foreign key(cod_pantalla) references tpantalla(codigo),
+   foreign key(cod_tipo_opcion) references ttipo_opcion(codigo)
+   
+)engine=innodb;
+
+create table tpermiso_pantalla_usr
+(
+   codigo int not null,
+   cod_permiso int not null,
+   cod_usuario int not null,
+   fechai datetime not null,
+   fechaf datetime,
+   estado char(1) not null,
+   primary key(codigo),
+   foreign key(cod_permiso) references topcion_pantalla(codigo)
+
+)engine=innodb;
+
+
+
+
+create table tunidad_medida
+(
+   codigo int auto_increment not null,
+   descripcion char(5) not null,
+   detalle char(50) not null,
+   primary key(codigo)
+)engine=innodb;
+
+
+insert into tunidad_medida values(1,'KG','KILOGRAMOS');
+insert into tunidad_medida values(2,'GR','GRAMOS');
+
+create table ttipo_producto
+(
+  codigo int auto_increment not null,
+  descripcion char(30) not null,
+  estado varchar(1) not null,
+  primary key(codigo)
+)engine=innodb;
+
+insert into ttipo_producto values(1,'BANDEJA','A');
+insert into ttipo_producto values(2,'PORTAVASOS','A');
+
+
+create table testado_producto
+(
+  codigo int auto_increment not null,
+  descripcion char(50) not null,
+  estado varchar(1) not null,
+  primary key(codigo)
+)engine=innodb;
+
+insert into testado_producto values(1,'TERMINADO','A');
+insert into testado_producto values(2,'HUMEDO','A');
+insert into testado_producto values(3,'SECO','A');
+
+
+create table tmaquina
+(
+  codigo int auto_increment not null,
+  descripcion char(50) not null,
+  estado char(1) not null,
+  primary key (codigo)
+)engine=innodb;
+
+
+
+create table tproducto
+(
+   codigo char(5) not null,
+   descripcion char(50) not null,
+   cod_tipop int not null,
+   estado char(1) not null,
+   primary key (codigo),
+   foreign key (cod_tipop) references ttipo_producto(codigo)
+  
+)engine=innodb;
+
+
+
+create table tmaquina_hace_producto
+(
+   codigo int auto_increment not null,
+   cod_maquina int not null,
+   cod_producto char(5) not null,
+   fecha_ini datetime not null,
+   fecha_fin datetime,
+   estado char(1) not null,
+   primary key(codigo),   
+   foreign key (cod_maquina) references tmaquina(codigo),
+   foreign key(cod_producto) references tproducto(codigo)
+)engine=innodb;
+
+
+create table tmateria_prima
+(
+  codigo int auto_increment not null,
+  descripcion char(50) not null,
+  estado varchar(1) not null,
+  primary key(codigo)
+)engine=innodb;
+
+
+create table tformulacion
+(
+  codigo int not null,
+  fecha_ini datetime not null,
+  fecha_fin datetime,
+  estado char(1) not null,
+  primary key(codigo)
+)engine=innodb;
+
+
+create table tdetalle_formulacion
+(
+  cod_formulacion int not null,  
+  cod_materiap int not null,
+  cantidad_min numeric(7,2) not null,
+  cantidad_ide numeric(7,2) not null,
+  cantidad_max numeric(7,2) not null,
+  cod_unidadm int not null,
+  primary key(cod_formulacion,cod_materiap),
+  foreign key(cod_formulacion) references tformulacion(codigo),
+  foreign key(cod_materiap) references tmateria_prima(codigo),
+  foreign key(cod_unidadm) references tunidad_medida(codigo)
+  
+)engine=innodb;
+
+
+
+create table tproducto_fabricado
+(
+  codigo int auto_increment not null,
+  cod_producto char(5) not null,
+  cod_estado int not null,
+  cod_formulacion int not null,
+  peso_min numeric(7,2) not null,
+  peso_ide numeric(7,2) not null,
+  peso_max numeric(7,2) not null,
+  fecha_ini datetime not null,
+  fecha_fin datetime,
+  estado char(1) not null,
+  primary key(codigo),
+  foreign key(cod_producto) references tproducto(codigo),
+  foreign key(cod_formulacion) references tformulacion(codigo),
+  foreign key(cod_estado) references testado_producto(codigo)
+)engine=innodb;
+
+
+create table tmaquina_consistencia
+(
+  codigo int auto_increment not null,
+  cod_maquina int not null,
+  peso_min numeric(7,2) not null,
+  peso_ide numeric(7,2) not null,
+  peso_max numeric(7,2) not null,
+  fecha_ini datetime not null,
+  fecha_fin datetime,
+  estado char(1) not null,
+  primary key(codigo),
+  foreign key(cod_maquina) references tmaquina(codigo)
+)engine=innodb;
+
+
+
+create table tlectura_peso
+(
+  codigo int not null,
+  fecha_hora datetime not null,
+  cod_empleado int not null,
+  cod_turno int not null,
+  fecha_turno date not null,
+  tipo_lectura int not null,
+  estado  Char(1) not null,
+  primary key(codigo),
+  foreign key (cod_empleado) references tusuario(codigo),
+  foreign key(cod_turno) references tturno(codigo)
+)engine=innodb;
+
+
+create table tpeso_materia_prima
+(
+  codigo_lectura int not null,
+  codigo_formula_dia int not null,
+  cod_formulacion int not null,
+  cod_materiap int not null,
+  peso numeric(7,2) not null,
+  fecha  date not null,
+  hora  time not null,
+  primary key(codigo_formula_dia,fecha,cod_materiap), 
+  foreign key(codigo_lectura) references tlectura_peso(codigo),
+  foreign key(cod_formulacion,cod_materiap) references tdetalle_formulacion(cod_formulacion,cod_materiap)
+        
+
+)engine=innodb;
+
+
+create table tpeso_producto_fabricado
+(
+  codigo_lectura int not null,
+  codigo_dia int not null,
+  cod_productof int not null,
+  cod_maquina   int not null,
+  peso numeric(7,2) not null,
+  fecha  date not null,
+  hora  time not null,
+  primary key(codigo_dia,fecha), 
+  foreign key(codigo_lectura) references tlectura_peso(codigo),
+  foreign key(cod_productof) references tproducto_fabricado(codigo),
+  foreign key(cod_maquina) references tmaquina(codigo)  
+)engine=innodb;
+
+
+create table tpeso_consistencia
+(
+   codigo_lectura int not null,
+   codigo_dia int not null,
+   cod_maquina_cons int not null,
+   peso   numeric(7,2) not null,
+   fecha  date not null,
+   hora  time not null,
+   primary key(codigo_dia,fecha), 
+   foreign key(codigo_lectura) references tlectura_peso(codigo),
+   foreign key(cod_maquina_cons) references tmaquina_consistencia(codigo)
+)engine=innodb;
+
+
+
+create table ttrabaja_turno
+(
+  cod_emp int not null,
+  cod_tur int not null,
+  fecha_turno date not null,
+  estado char(1) not null,
+  fecha_horai datetime not null,
+  fecha_horaf datetime,
+  primary key(cod_emp,cod_tur,fecha_turno),
+  foreign key(cod_emp) references tusuario(codigo),
+  foreign key(cod_tur) references tturno(codigo)
+)engine=innodb
+
+;
+
+
+create table log_ttrabaja_turno
+(
+  cod_emp int not null,
+  cod_tur int not null,
+  fecha_turno date not null,
+  estadoc char(1) not null,
+  fecha_hora datetime not null,
+  cod_usu int not null
+)engine=innodb
+;
+
+
+create table log_tlectura_peso
+(
+  codigo int not null,
+  fecha_hora datetime not null,
+  cod_empleado int not null,
+  cod_turno int not null,
+  fecha_turno date not null,
+  tipo_lectura int not null,
+  estado  Char(1) not null,
+  obs     char(50) not null
+)engine=innodb;
+
+
+
+
+
+create user 'usrmolcruz'@'%' IDENTIFIED BY 'pusrmolcruz';
+
+GRANT SELECT,INSERT,UPDATE,DELETE,execute, lock tables, grant option 
+    ON dbmolcruz.* TO 'usrmolcruz'@'%' with grant option;
+
+
+
+
+
+//  constraint unique idxuniquenlnp (nro_produccion,nro_lectura),

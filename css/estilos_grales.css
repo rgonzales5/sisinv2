@@ -1,0 +1,52 @@
+body {
+	background-color: #FFFF99;
+}
+
+body, td{
+	color: #330033;
+}
+
+h1, h2, h4 {
+	color: #330000;
+}
+
+h3, h5, h6 {
+	color: #996666;
+}
+
+a {
+  color: #006666;
+}
+
+
+.tableFilaPar {
+	background-color: #CCFF99;
+}
+
+
+.tableFilaImpar {
+	background-color: #FFFFCC;
+}
+
+.btnsel
+{
+  color:#006699;
+}
+
+
+
+th {
+	background-color: #CCCC99;
+}
+
+.campoReadOnly
+{
+  background-color:#999999;
+  color:#000066;
+}
+
+.divbusqueda{
+	cursor: pointer;
+	border: medium solid #003399;
+	background-color:#CCCCCC;
+            }
